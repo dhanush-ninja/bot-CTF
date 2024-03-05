@@ -1,2 +1,9 @@
 __pycache__
 venv
+.env
+src
+blueprints
+main.py
+test.py
+responses.py
+config.json
