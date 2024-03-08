@@ -33,13 +33,13 @@ async def on_ready():
     print(f'{client.user} has connected to Discord!')
 
 
-@app.post("/send_message")
+@app.post("/api/v1/send_message")
 async def send_message(message: str, channel_id: int):
     channel = client.get_channel(channel_id)
     await channel.send(message)
     return JSONResponse(content={"message": "Message sent", "status": "success"}, status_code=status.HTTP_200_OK)
 
-@app.post("/create_channel")
+@app.post("/api/v1/create_channel")
 async def create_channel(channel_name: str, role_name: str, username: str):
     guild = client.get_guild(1211624982237417542)
     clan_category = discord.utils.get(guild.categories, name="Clan")
@@ -66,7 +66,7 @@ async def create_channel(channel_name: str, role_name: str, username: str):
     else:
         return JSONResponse(content={"message": "User not found", "status": "error"}, status_code=status.HTTP_404_NOT_FOUND)
     
-@app.post("/delete_channel")
+@app.post("/api/v1/delete_channel")
 async def delete_channel(channel_name: str):
     guild = client.get_guild(1211624982237417542)
     channel = discord.utils.get(guild.channels, name=channel_name)
@@ -76,7 +76,7 @@ async def delete_channel(channel_name: str):
     else:
         return JSONResponse(content={"message": "Channel not found", "status": "error"}, status_code=status.HTTP_404_NOT_FOUND)
     
-@app.post("/check_user")
+@app.post("/api/v1/check_user")
 async def check_user(username: str):
     guild = client.get_guild(1211624982237417542)
     member = discord.utils.get(guild.members, name=username)
