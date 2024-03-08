@@ -8,7 +8,6 @@ import os
 from fastapi.responses import JSONResponse
 app = FastAPI(
     title="Discord Bot API",
-    docs_url=None,
     redoc_url=None,
     version="0.1.0"
 )
