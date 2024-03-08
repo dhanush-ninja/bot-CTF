@@ -6,6 +6,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 import os
 from fastapi.responses import JSONResponse
+const port = process.env.PORT || 8000;
 app = FastAPI(
     title="Discord Bot API",
     docs_url=None,
