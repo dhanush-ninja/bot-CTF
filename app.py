@@ -17,7 +17,7 @@ TOKEN = os.getenv("DISCORD_TOKEN")
 intents = discord.Intents.default()
 intents.messages = True
 intents.guilds = True
-intents.message_content = True 
+intents.message_content = True  
 intents.members = True
 
 client = discord.Client(intents=intents)
@@ -39,6 +39,21 @@ async def on_message(message: Message) -> None:
     else:
         return
 
+# @app.route('/send_message', methods=['POST'])
+# def send_message():
+#     data = request.form
+#     message = data['message']
+#     channel_id = data['channel_id']
+#     result_queue = Queue()
+#     print(f"Sending message to channel {channel_id}: {message}")
+    
+#     asyncio.run_coroutine_threadsafe(
+#         send_discord_message(channel_id, message, result_queue),
+#         client.loop
+#     )
+#     result = result_queue.get(block=True)
+#     return jsonify({"message": "Message sent" if result else "Channel not found", "status": "success" if result else "error"}), 200 if result else 404
+
 @app.route('/send_message', methods=['POST'])
 def send_message():
     data = request.form
@@ -46,13 +61,28 @@ def send_message():
     channel_id = data['channel_id']
     result_queue = Queue()
     print(f"Sending message to channel {channel_id}: {message}")
-    
-    asyncio.run_coroutine_threadsafe(
-        send_discord_message(channel_id, message, result_queue),
-        client.loop
+
+    # Use the existing event loop that has been set when the server started
+    loop = asyncio.get_event_loop()
+
+    # Schedule the coroutine to be run on the existing event loop
+    future = asyncio.run_coroutine_threadsafe(
+        send_discord_message(channel_id, message, result_queue), loop
     )
-    result = result_queue.get(block=True)
+
+    # Wait for the coroutine to complete, with a timeout to prevent hanging
+    try:
+        result = future.result(timeout=10)  # Adjust timeout as necessary
+    except asyncio.TimeoutError:
+        print(f"Timeout when sending message to channel {channel_id}")
+        return jsonify({"message": "Timeout when sending message", "status": "error"}), 504
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return jsonify({"message": "An error occurred when sending the message", "status": "error"}), 500
+
     return jsonify({"message": "Message sent" if result else "Channel not found", "status": "success" if result else "error"}), 200 if result else 404
+
+
 
 async def send_discord_message(channel_id, message, result_queue):
     if not channel_id:
@@ -156,6 +186,12 @@ def run_discord_client():
 
 if __name__ == '__main__':
     from threading import Thread
+    # discord_thread = Thread(target=run_discord_client)
+    # discord_thread.start()
+    # app.run(port=5000)
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
     discord_thread = Thread(target=run_discord_client)
     discord_thread.start()
     app.run(port=5000)
+

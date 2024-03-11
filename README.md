@@ -53,3 +53,9 @@ Contributions are what make the open-source community such an amazing place to l
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details
+
+
+In my updated code 
+Run this server by navigating into the folder Discord_bot   and run the below command.
+
+uvicorn app.main:app --reload

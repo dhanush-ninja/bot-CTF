@@ -1,5 +1,6 @@
 __pycache__
 venv
+virt
 .env
 src
 blueprints
